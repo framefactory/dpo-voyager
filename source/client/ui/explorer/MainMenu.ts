@@ -90,6 +90,8 @@ export default class MainMenu extends DocumentView
         const toolButtonVisible = setup.interface.ins.tools.value;
         const toolsActive = this.toolProvider.ins.visible.value;
 
+        const turntableEnabled = setup.navigation.ins.turntableEnabled.value;
+
         return html`${tourButtonVisible ? html`<ff-button icon="globe" title="Interactive Tours"
             ?selected=${toursActive} @click=${this.onToggleTours}></ff-button>` : null}
         <ff-button icon="article" title="Read more..."
@@ -100,6 +102,8 @@ export default class MainMenu extends DocumentView
             ?selected=${this.shareButtonSelected} @click=${this.onToggleShare}></ff-button>    
         ${fullscreenButtonVisible ? html`<ff-button icon="expand" title="Fullscreen"
             ?selected=${fullscreenActive} @click=${this.onToggleFullscreen}></ff-button>` : null}
+        <ff-button icon="cog" title="Automatic Rotation"
+            ?selected=${turntableEnabled} @click=${this.onToggleTurntable}></ff-button>
         ${toolButtonVisible ? html`<ff-button icon="tools" title="Tools and Settings"
             ?selected=${toolsActive} ?disabled=${modeButtonsDisabled} @click=${this.onToggleTools}></ff-button>` : null}`;
     }
@@ -161,6 +165,12 @@ export default class MainMenu extends DocumentView
         this.analytics.sendProperty("Menu.Fullscreen");
     }
 
+    protected onToggleTurntable()
+    {
+        const navigation = this.activeDocument.setup.navigation;
+        navigation.ins.turntableEnabled.setValue(!navigation.ins.turntableEnabled.value);
+    }
+
     protected onToggleTools()
     {
         const toolIns = this.toolProvider.ins;
@@ -187,6 +197,7 @@ export default class MainMenu extends DocumentView
                 setup.tours.ins.enabled,
                 setup.tours.outs.count,
                 setup.viewer.ins.annotationsVisible,
+                setup.navigation.ins.turntableEnabled,
                 this.toolProvider.ins.visible
             );
         }

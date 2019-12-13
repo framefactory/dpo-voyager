@@ -30,6 +30,8 @@ import { INavigation } from "client/schema/setup";
 
 import CVScene from "./CVScene";
 import CVAssetManager from "./CVAssetManager";
+import { IUpdateContext } from "@ff/graph/Component";
+import { IPulseContext } from "@ff/graph/components/CPulse";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -82,14 +84,24 @@ export default class CVOrbitNavigation extends CObject3D
         minOffset: types.Vector3("Limits.Min.Offset", [ -Infinity, -Infinity, 0.1 ]),
         maxOrbit: types.Vector3("Limits.Max.Orbit", [ 90, Infinity, Infinity ]),
         maxOffset: types.Vector3("Limits.Max.Offset", [ Infinity, Infinity, Infinity ]),
+        turntableEnabled: types.Boolean("Turntable.Enabled", true),
+        turntableDelay: types.Number("Turntable.Delay", 10),
+        turntableSpeed: types.Number("Turntable.Speed", 20),
+    };
+
+    protected static readonly outs = {
+        turntableActive: types.Boolean("Turntable.Active", false),
     };
 
     ins = this.addInputs<CObject3D, typeof CVOrbitNavigation.ins>(CVOrbitNavigation.ins);
+    outs = this.addOutputs<CObject3D, typeof CVOrbitNavigation.outs>(CVOrbitNavigation.outs);
 
     private _controller = new CameraController();
     private _scene: CScene = null;
     private _modelBoundingBox: THREE.Box3 = null;
     private _hasChanged = false;
+
+    private _timerHandle = null;
 
     constructor(node: Node, id: string)
     {
@@ -109,6 +121,9 @@ export default class CVOrbitNavigation extends CObject3D
             this.ins.minOffset,
             this.ins.maxOrbit,
             this.ins.maxOffset,
+            this.ins.turntableEnabled,
+            this.ins.turntableDelay,
+            this.ins.turntableSpeed,
         ];
     }
 
@@ -143,7 +158,7 @@ export default class CVOrbitNavigation extends CObject3D
         super.dispose();
     }
 
-    update()
+    update(context: IPulseContext)
     {
         const ins = this.ins;
         const controller = this._controller;
@@ -202,10 +217,23 @@ export default class CVOrbitNavigation extends CObject3D
             controller.maxOffset.fromArray(maxOffset.value);
         }
 
+        if (ins.turntableEnabled.changed) {
+            if (ins.turntableEnabled.value) {
+                this._timerHandle = setTimeout(() => {
+                    this.outs.turntableActive.setValue(true);
+                }, this.ins.turntableDelay.value * 1000);
+            }
+            else if (this._timerHandle) {
+                clearTimeout(this._timerHandle);
+                this._timerHandle = null;
+                this.outs.turntableActive.setValue(false);
+            }
+        }
+
         return true;
     }
 
-    tick()
+    tick(context: IPulseContext)
     {
         const ins = this.ins;
         const cameraComponent = this._scene.activeCameraComponent;
@@ -218,9 +246,15 @@ export default class CVOrbitNavigation extends CObject3D
         controller.camera = cameraComponent.camera;
 
         const transform = cameraComponent.transform;
-        const forceUpdate = this.changed;
+        let forceUpdate = this.changed;
+
+        if (this.outs.turntableActive.value) {
+            controller.orbit.y += context.secondsDelta * ins.turntableSpeed.value;
+            forceUpdate = true;
+        }
 
         if (controller.updateCamera(transform.object3D, forceUpdate)) {
+
             controller.orbit.toArray(ins.orbit.value);
             ins.orbit.set(true);
             controller.offset.toArray(ins.offset.value);
@@ -329,6 +363,14 @@ export default class CVOrbitNavigation extends CObject3D
             event.stopPropagation = true;
         }
 
+        if (this._timerHandle) {
+            this.outs.turntableActive.setValue(false);
+            clearTimeout(this._timerHandle);
+            this._timerHandle = setTimeout(() => {
+                this.outs.turntableActive.setValue(true);
+            }, this.ins.turntableDelay.value * 1000);
+        }
+
         this._hasChanged = true;
     }
 
@@ -345,6 +387,14 @@ export default class CVOrbitNavigation extends CObject3D
             this._controller.setViewportSize(viewport.width, viewport.height);
             this._controller.onTrigger(event);
             event.stopPropagation = true;
+        }
+
+        if (this._timerHandle) {
+            this.outs.turntableActive.setValue(false);
+            clearTimeout(this._timerHandle);
+            this._timerHandle = setTimeout(() => {
+                this.outs.turntableActive.setValue(true);
+            }, this.ins.turntableDelay.value * 1000);
         }
 
         this._hasChanged = true;
