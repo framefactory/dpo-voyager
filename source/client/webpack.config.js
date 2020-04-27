@@ -201,7 +201,7 @@ function createAppConfig(app, isDevMode, isOffline)
                     // Typescript/JSX files
                     test: /\.tsx?$/,
                     use: "ts-loader",
-		    exclude: /node_modules/,
+		            exclude: /node_modules/,
                 },
                 {
                     // Enforce source maps for all javascript files
