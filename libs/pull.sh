@@ -4,13 +4,14 @@
 function pull {
     echo "----- pull $1 -----"
     cd $PWD/$1
-    git pull
+    git pull origin master
+    git checkout master
     cd ..
 }
 
-pull ff-core
 pull ff-browser
+pull ff-core
 pull ff-graph
-pull ff-ui
 pull ff-scene
 pull ff-three
+pull ff-ui

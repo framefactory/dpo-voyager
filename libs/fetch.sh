@@ -8,9 +8,9 @@ function fetch {
     cd ..
 }
 
-fetch ff-core
 fetch ff-browser
+fetch ff-core
 fetch ff-graph
-fetch ff-ui
 fetch ff-scene
 fetch ff-three
+fetch ff-ui

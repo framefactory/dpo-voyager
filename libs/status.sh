@@ -8,9 +8,9 @@ function status {
     cd ..
 }
 
-status ff-core
 status ff-browser
+status ff-core
 status ff-graph
-status ff-ui
 status ff-scene
 status ff-three
+status ff-ui

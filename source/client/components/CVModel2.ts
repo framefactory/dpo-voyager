@@ -15,7 +15,16 @@
  * limitations under the License.
  */
 
-import * as THREE from "three";
+import {
+    Object3D,
+    Group,
+    Mesh,
+    Vector3 as ThreeVector3,
+    Quaternion,
+    Box3,
+    Matrix4,
+    Box3Helper,
+} from "three";
 
 import Notification from "@ff/ui/Notification";
 
@@ -40,10 +49,10 @@ import CRenderer from "@ff/scene/components/CRenderer";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-const _vec3a = new THREE.Vector3();
-const _vec3b = new THREE.Vector3();
-const _quat = new THREE.Quaternion();
-const _box = new THREE.Box3();
+const _vec3a = new ThreeVector3();
+const _vec3b = new ThreeVector3();
+const _quat = new Quaternion();
+const _box = new Box3();
 
 export interface ITagUpdateEvent extends ITypedEvent<"tag-update">
 {
@@ -117,14 +126,14 @@ export default class CVModel2 extends CObject3D
     private _activeDerivative: Derivative = null;
 
     private _visible: boolean = true;
-    private _boxFrame: THREE.Mesh = null;
-    private _localBoundingBox = new THREE.Box3();
+    private _boxFrame: Mesh = null;
+    private _localBoundingBox = new Box3();
 
     constructor(node: Node, id: string)
     {
         super(node, id);
 
-        this.object3D = new THREE.Group();
+        this.object3D = new Group();
     }
 
     get derivatives() {
@@ -133,7 +142,7 @@ export default class CVModel2 extends CObject3D
     get activeDerivative() {
         return this._activeDerivative;
     }
-    get localBoundingBox(): Readonly<THREE.Box3> {
+    get localBoundingBox(): Readonly<Box3> {
         return this._localBoundingBox;
     }
 
@@ -282,7 +291,7 @@ export default class CVModel2 extends CObject3D
         position.set();
     }
 
-    setFromMatrix(matrix: THREE.Matrix4)
+    setFromMatrix(matrix: Matrix4)
     {
         const ins = this.ins;
 
@@ -330,7 +339,7 @@ export default class CVModel2 extends CObject3D
             boundingBox.min.fromArray(data.boundingBox.min);
             boundingBox.max.fromArray(data.boundingBox.max);
 
-            this._boxFrame = new (THREE.Box3Helper as any)(boundingBox, "#009cde");
+            this._boxFrame = new (Box3Helper as any)(boundingBox, "#009cde");
             this.addObject3D(this._boxFrame);
 
             outs.updated.set();
@@ -480,7 +489,7 @@ export default class CVModel2 extends CObject3D
         this.outs.updated.set();
     }
 
-    protected updateRenderOrder(model: THREE.Object3D, value: number)
+    protected updateRenderOrder(model: Object3D, value: number)
     {
         model.renderOrder = value;
         model.children.forEach(child => this.updateRenderOrder(child, value));

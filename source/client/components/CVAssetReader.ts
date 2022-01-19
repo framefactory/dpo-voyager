@@ -15,6 +15,12 @@
  * limitations under the License.
  */
 
+import {
+    Object3D,
+    Geometry,
+    Texture,
+} from "three";
+
 import fetch from "@ff/browser/fetch";
 import Component, { Node } from "@ff/graph/Component";
 
@@ -73,19 +79,19 @@ export default class CVAssetReader extends Component
         return fetch.text(url, "GET");
     }
 
-    async getModel(assetPath: string): Promise<THREE.Object3D>
+    async getModel(assetPath: string): Promise<Object3D>
     {
         const url = this.assetManager.getAssetUrl(assetPath);
         return this.modelLoader.get(url);
     }
 
-    async getGeometry(assetPath: string): Promise<THREE.Geometry>
+    async getGeometry(assetPath: string): Promise<Geometry>
     {
         const url = this.assetManager.getAssetUrl(assetPath);
         return this.geometryLoader.get(url);
     }
 
-    async getTexture(assetPath: string): Promise<THREE.Texture>
+    async getTexture(assetPath: string): Promise<Texture>
     {
         const url = this.assetManager.getAssetUrl(assetPath);
         return this.textureLoader.get(url);

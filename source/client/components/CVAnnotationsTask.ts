@@ -15,7 +15,12 @@
  * limitations under the License.
  */
 
-import * as THREE from "three";
+import {
+    Vector3,
+    Matrix3,
+    Matrix4,
+    Quaternion,
+} from "three";
 
 import * as helpers from "@ff/three/helpers";
 
@@ -37,11 +42,11 @@ import CVScene from "client/components/CVScene";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-const _position = new THREE.Vector3();
-const _scaling = new THREE.Vector3();
-const _quat = new THREE.Quaternion();
-const _mat4 = new THREE.Matrix4();
-const _mat3 = new THREE.Matrix3();
+const _position = new Vector3();
+const _scaling = new Vector3();
+const _quat = new Quaternion();
+const _mat4 = new Matrix4();
+const _mat3 = new Matrix3();
 
 export enum EAnnotationsTaskMode { Off, Move, Create }
 

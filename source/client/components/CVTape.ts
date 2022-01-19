@@ -15,7 +15,15 @@
  * limitations under the License.
  */
 
-import * as THREE from "three";
+import {
+    Group,
+    Geometry,
+    Line,
+    LineBasicMaterial,
+    Vector3,
+    Matrix3,
+    Box3,
+} from "three";
 
 import CObject3D, { Node, types, IPointerEvent } from "@ff/scene/components/CObject3D";
 
@@ -27,10 +35,10 @@ import CVScene from "client/components/CVScene";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-const _mat3 = new THREE.Matrix3();
-const _vec3a = new THREE.Vector3();
-const _vec3b = new THREE.Vector3();
-const _vec3up = new THREE.Vector3(0, 1, 0);
+const _mat3 = new Matrix3();
+const _vec3a = new Vector3();
+const _vec3b = new Vector3();
+const _vec3up = new Vector3(0, 1, 0);
 
 export enum ETapeState { SetStart, SetEnd }
 
@@ -46,7 +54,7 @@ export default class CVTape extends CObject3D
         startDirection: types.Vector3("Start.Direction"),
         endPosition: types.Vector3("End.Position"),
         endDirection: types.Vector3("End.Direction"),
-        boundingBox: types.Object("Scene.BoundingBox", THREE.Box3),
+        boundingBox: types.Object("Scene.BoundingBox", Box3),
     };
 
     protected static readonly tapeOuts = {
@@ -75,13 +83,13 @@ export default class CVTape extends CObject3D
 
     protected startPin: Pin = null;
     protected endPin: Pin = null;
-    protected line: THREE.Line = null;
+    protected line: Line = null;
 
     constructor(node: Node, id: string)
     {
         super(node, id);
 
-        this.object3D = new THREE.Group();
+        this.object3D = new Group();
 
         this.startPin = new Pin();
         this.startPin.matrixAutoUpdate = false;
@@ -91,12 +99,12 @@ export default class CVTape extends CObject3D
         this.endPin.matrixAutoUpdate = false;
         this.endPin.visible = false;
 
-        const lineGeometry = new THREE.Geometry();
-        lineGeometry.vertices.push(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, 0));
-        const lineMaterial = new THREE.LineBasicMaterial();
+        const lineGeometry = new Geometry();
+        lineGeometry.vertices.push(new Vector3(0, 0, 0), new Vector3(0, 0, 0));
+        const lineMaterial = new LineBasicMaterial();
         lineMaterial.depthTest = false;
         lineMaterial.transparent = true;
-        this.line = new THREE.Line(lineGeometry, lineMaterial);
+        this.line = new Line(lineGeometry, lineMaterial);
         this.line.visible = false;
 
         this.object3D.add(this.startPin, this.endPin, this.line);
@@ -115,7 +123,7 @@ export default class CVTape extends CObject3D
         super.update(context);
 
         const ins = this.ins;
-        const lineGeometry = this.line.geometry as THREE.Geometry;
+        const lineGeometry = this.line.geometry as Geometry;
 
         // determine pin scale based on scene/model bounding box
         if (ins.boundingBox.changed && ins.boundingBox.value) {

@@ -15,7 +15,11 @@
  * limitations under the License.
  */
 
-import * as THREE from "three";
+import {
+    Vector3,
+    Box3
+} from "three";
+
 import hotkeys from "hotkeys-js";
 
 import CObject3D, { Node, types } from "@ff/scene/components/CObject3D";
@@ -38,7 +42,7 @@ export { EProjection };
 export enum EViewPreset { Left, Right, Top, Bottom, Front, Back, None }
 
 
-const _vec3 = new THREE.Vector3();
+const _vec3 = new Vector3();
 
 const _orientationPresets = [];
 _orientationPresets[EViewPreset.Left] = [ 0, -90, 0 ];
@@ -88,7 +92,7 @@ export default class CVOrbitNavigation extends CObject3D
 
     private _controller = new CameraController();
     private _scene: CScene = null;
-    private _modelBoundingBox: THREE.Box3 = null;
+    private _modelBoundingBox: Box3 = null;
     private _hasChanged = false;
 
     constructor(node: Node, id: string)

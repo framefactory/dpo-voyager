@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-import * as THREE from "three";
-
 import AnnotationSprite, { Annotation, AnnotationElement } from "./AnnotationSprite";
 import AnnotationFactory from "./AnnotationFactory";
 

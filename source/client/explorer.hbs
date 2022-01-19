@@ -30,18 +30,14 @@
     {{#if htmlWebpackPlugin.options.isDevelopment}}
         {{#if htmlWebpackPlugin.options.isOffline}}
             <script src="/libs/pep.js"></script>
-            <script src="/libs/three.js"></script>
         {{else}}
             <script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/108/three.js"></script>
         {{/if}}
     {{else}}
         {{#if htmlWebpackPlugin.options.isOffline}}
             <script src="/libs/pep.min.js"></script>
-            <script src="/libs/three.min.js"></script>
         {{else}}
             <script src="https://code.jquery.com/pep/0.4.3/pep.min.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/108/three.min.js"></script>
         {{/if}}
     {{/if}}
 

@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-import * as THREE from "three";
+import {
+    LoadingManager,
+    Geometry,
+} from "three";
 
-import "three/examples/js/loaders/OBJLoader";
-const OBJLoader = (THREE as any).OBJLoader;
-
-import "three/examples/js/loaders/PLYLoader";
-const PLYLoader = (THREE as any).PLYLoader;
+import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader";
+import { PLYLoader } from "three/examples/jsm/loaders/PLYLoader";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -32,7 +32,7 @@ export default class GeometryReader
     protected objLoader: any;
     protected plyLoader: any;
 
-    constructor(loadingManager: THREE.LoadingManager)
+    constructor(loadingManager: LoadingManager)
     {
         this.objLoader = new OBJLoader(loadingManager);
         this.plyLoader = new PLYLoader(loadingManager);
@@ -44,7 +44,7 @@ export default class GeometryReader
         return GeometryReader.extensions.indexOf(extension) >= 0;
     }
 
-    get(url: string): Promise<THREE.Geometry>
+    get(url: string): Promise<Geometry>
     {
         const extension = url.split(".").pop().toLowerCase();
 

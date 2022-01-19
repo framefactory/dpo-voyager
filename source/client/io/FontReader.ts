@@ -15,7 +15,11 @@
  * limitations under the License.
  */
 
-import * as THREE from "three";
+import {
+    LoadingManager,
+    TextureLoader,
+    Texture,
+} from "three";
 
 import { Dictionary } from "@ff/core/types";
 
@@ -24,19 +28,19 @@ import { Dictionary } from "@ff/core/types";
 export interface IBitmapFont
 {
     descriptor: object;
-    texture: THREE.Texture;
+    texture: Texture;
 }
 
 export default class FontReader
 {
-    private _loadingManager: THREE.LoadingManager;
-    private _textureLoader: THREE.TextureLoader;
+    private _loadingManager: LoadingManager;
+    private _textureLoader: TextureLoader;
     private _cache: Dictionary<IBitmapFont>;
 
-    constructor(loadingManager: THREE.LoadingManager)
+    constructor(loadingManager: LoadingManager)
     {
         this._loadingManager = loadingManager;
-        this._textureLoader = new THREE.TextureLoader(loadingManager);
+        this._textureLoader = new TextureLoader(loadingManager);
         this._cache = {};
     }
 
@@ -83,7 +87,7 @@ export default class FontReader
             .then(result => {
                 const font: IBitmapFont = {
                     descriptor: result[0] as object,
-                    texture: result[1] as THREE.Texture,
+                    texture: result[1] as Texture,
                 };
                 this._cache[url] = font;
                 this._loadingManager.itemEnd(url);

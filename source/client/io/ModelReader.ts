@@ -16,13 +16,19 @@
  */
 
 import resolvePathname from "resolve-pathname";
-import * as THREE from "three";
 
-import "three/examples/js/loaders/GLTFLoader";
-import "three/examples/js/loaders/DRACOLoader";
+import {
+    LoadingManager,
+    Object3D,
+    Group,
+    Scene,
+    Mesh,
+    MeshStandardMaterial,
+    sRGBEncoding,
+} from "three";
 
-const GLTFLoader = (THREE as any).GLTFLoader;
-const DRACOLoader = (THREE as any).DRACOLoader;
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
 
 import UberPBRMaterial from "../shaders/UberPBRMaterial";
 
@@ -33,10 +39,10 @@ export default class ModelReader
     static readonly extensions = [ "gltf", "glb" ];
     static readonly mimeTypes = [ "model/gltf+json", "model/gltf-binary" ];
 
-    protected loadingManager: THREE.LoadingManager;
+    protected loadingManager: LoadingManager;
     protected gltfLoader;
 
-    constructor(loadingManager: THREE.LoadingManager)
+    constructor(loadingManager: LoadingManager)
     {
         this.loadingManager = loadingManager;
 
@@ -63,7 +69,7 @@ export default class ModelReader
         return ModelReader.mimeTypes.indexOf(mimeType) >= 0;
     }
 
-    get(url: string): Promise<THREE.Object3D>
+    get(url: string): Promise<Object3D>
     {
         return new Promise((resolve, reject) => {
             this.gltfLoader.load(url, gltf => {
@@ -75,24 +81,24 @@ export default class ModelReader
         });
     }
 
-    protected createModelGroup(gltf): THREE.Object3D
+    protected createModelGroup(gltf): Object3D
     {
-        const scene: THREE.Scene = gltf.scene;
+        const scene: Scene = gltf.scene;
         if (scene.type !== "Scene") {
             throw new Error("not a valid gltf scene");
         }
 
-        const model = new THREE.Group();
+        const model = new Group();
         scene.children.forEach(child => model.add(child));
 
         model.traverse((object: any) => {
             if (object.type === "Mesh") {
-                const mesh: THREE.Mesh = object;
+                const mesh: Mesh = object;
                 mesh.castShadow = true;
-                const material = mesh.material as THREE.MeshStandardMaterial;
+                const material = mesh.material as MeshStandardMaterial;
 
                 if (material.map) {
-                   material.map.encoding = THREE.sRGBEncoding;
+                   material.map.encoding = sRGBEncoding;
                 }
 
                 mesh.geometry.computeBoundingBox();

@@ -15,7 +15,20 @@
  * limitations under the License.
  */
 
-import * as THREE from "three";
+import {
+    MeshStandardMaterial,
+    MeshStandardMaterialParameters,
+    Color,
+    Vector3,
+    Vector4,
+    Side,
+    FrontSide,
+    UniformsUtils,
+    ShaderLib,
+    DoubleSide,
+    NoBlending,
+    AdditiveBlending,
+} from "three";
 
 const fragmentShader = require("./uberPBRShader.frag").default;
 const vertexShader = require("./uberPBRShader.vert").default;
@@ -26,36 +39,36 @@ import { EShaderMode } from "client/schema/setup";
 
 export { EShaderMode };
 
-export interface IUberPBRShaderProps extends THREE.MeshStandardMaterialParameters
+export interface IUberPBRShaderProps extends MeshStandardMaterialParameters
 {
 
 }
 
-export default class UberPBRMaterial extends THREE.MeshStandardMaterial
+export default class UberPBRMaterial extends MeshStandardMaterial
 {
     isUberPBRMaterial: boolean;
     isMeshStandardMaterial: boolean;
     isMeshPhysicalMaterial: boolean;
 
     uniforms: {
-        aoMapMix: { value: THREE.Vector3 },
-        cutPlaneDirection: { value: THREE.Vector4 },
-        cutPlaneColor: { value: THREE.Vector3 }
+        aoMapMix: { value: Vector3 },
+        cutPlaneDirection: { value: Vector4 },
+        cutPlaneColor: { value: Vector3 }
     };
 
     vertexShader: string;
     fragmentShader: string;
 
-    private _clayColor = new THREE.Color("#a67a6c");
-    private _wireColor = new THREE.Color("#004966");
-    private _wireEmissiveColor = new THREE.Color("#004966");
+    private _clayColor = new Color("#a67a6c");
+    private _wireColor = new Color("#004966");
+    private _wireEmissiveColor = new Color("#004966");
     private _objectSpaceNormalMap = false;
     private _paramCopy: any = {};
-    private _sideCopy: THREE.Side = THREE.FrontSide;
+    private _sideCopy: Side = FrontSide;
 
-    private _aoMapMix: THREE.Vector3;
-    private _cutPlaneDirection: THREE.Vector4;
-    private _cutPlaneColor: THREE.Vector3;
+    private _aoMapMix: Vector3;
+    private _cutPlaneDirection: Vector4;
+    private _cutPlaneColor: Vector3;
 
     constructor(params?: IUberPBRShaderProps)
     {
@@ -76,12 +89,12 @@ export default class UberPBRMaterial extends THREE.MeshStandardMaterial
             "CUT_PLANE": false,
         };
 
-        this.uniforms = THREE.UniformsUtils.merge([
-            THREE.ShaderLib.standard.uniforms,
+        this.uniforms = UniformsUtils.merge([
+            ShaderLib.standard.uniforms,
             {
-                aoMapMix: { value: new THREE.Vector3(0.25, 0.25, 0.25) },
-                cutPlaneDirection: { value: new THREE.Vector4(0, 0, -1, 0) },
-                cutPlaneColor: { value: new THREE.Vector3(1, 0, 0) },
+                aoMapMix: { value: new Vector3(0.25, 0.25, 0.25) },
+                cutPlaneDirection: { value: new Vector4(0, 0, -1, 0) },
+                cutPlaneColor: { value: new Vector3(1, 0, 0) },
             }
         ]);
 
@@ -94,7 +107,7 @@ export default class UberPBRMaterial extends THREE.MeshStandardMaterial
         //this.fragmentShader = ShaderLib.standard.fragmentShader;
         this.fragmentShader = fragmentShader;
 
-        this.color = new THREE.Color(0xffffff); // diffuse
+        this.color = new Color(0xffffff); // diffuse
         this.roughness = 0.7;
         this.metalness = 0.0;
 
@@ -103,21 +116,21 @@ export default class UberPBRMaterial extends THREE.MeshStandardMaterial
         }
     }
 
-    set cutPlaneDirection(direction: THREE.Vector4) {
+    set cutPlaneDirection(direction: Vector4) {
         this._cutPlaneDirection.copy(direction);
     }
     get cutPlaneDirection() {
         return this._cutPlaneDirection;
     }
 
-    set cutPlaneColor(color: THREE.Vector3) {
+    set cutPlaneColor(color: Vector3) {
         this._cutPlaneColor.copy(color);
     }
     get cutPlaneColor() {
         return this._cutPlaneColor;
     }
 
-    set aoMapMix(mix: THREE.Vector3) {
+    set aoMapMix(mix: Vector3) {
         this._aoMapMix.copy(mix);
     }
     get aoMapMix() {
@@ -151,7 +164,7 @@ export default class UberPBRMaterial extends THREE.MeshStandardMaterial
                 this.roughness = 1;
                 this.metalness = 0;
                 this.aoMapIntensity *= 1;
-                this.blending = THREE.NoBlending;
+                this.blending = NoBlending;
                 this.transparent = false;
                 this.depthWrite = true;
                 break;
@@ -163,7 +176,7 @@ export default class UberPBRMaterial extends THREE.MeshStandardMaterial
                     depthWrite: this.depthWrite,
                 };
                 this.defines["MODE_NORMALS"] = true;
-                this.blending = THREE.NoBlending;
+                this.blending = NoBlending;
                 this.transparent = false;
                 this.depthWrite = true;
                 break;
@@ -176,8 +189,8 @@ export default class UberPBRMaterial extends THREE.MeshStandardMaterial
                     depthWrite: this.depthWrite,
                 };
                 this.defines["MODE_XRAY"] = true;
-                this.side = THREE.DoubleSide;
-                this.blending = THREE.AdditiveBlending;
+                this.side = DoubleSide;
+                this.blending = AdditiveBlending;
                 this.transparent = true;
                 this.depthWrite = false;
                 break;
@@ -214,7 +227,7 @@ export default class UberPBRMaterial extends THREE.MeshStandardMaterial
 
         if (enabled) {
             this._sideCopy = this.side;
-            this.side = THREE.DoubleSide;
+            this.side = DoubleSide;
         }
         else {
             this.side = this._sideCopy;
@@ -233,7 +246,7 @@ export default class UberPBRMaterial extends THREE.MeshStandardMaterial
         }
     }
 
-    copyStandardMaterial(material: THREE.MeshStandardMaterial): this
+    copyStandardMaterial(material: MeshStandardMaterial): this
     {
         this.color = material.color;
         this.opacity = material.opacity;

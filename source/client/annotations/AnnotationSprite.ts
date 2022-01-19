@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as THREE from "three";
+import { Vector3 } from "three";
 
 import { ITypedEvent } from "@ff/core/Publisher";
 import HTMLSprite, { SpriteElement, html } from "@ff/three/HTMLSprite";
@@ -24,8 +24,8 @@ import Annotation from "../models/Annotation";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-const _vec3up = new THREE.Vector3(0, 1, 0);
-const _vec3dir = new THREE.Vector3();
+const _vec3up = new Vector3(0, 1, 0);
+const _vec3dir = new Vector3();
 
 export { Annotation, html };
 

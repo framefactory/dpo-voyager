@@ -15,7 +15,13 @@
  * limitations under the License.
  */
 
-import * as THREE from "three";
+import {
+    Geometry,
+    Line,
+    LineBasicMaterial,
+    Camera,
+    Vector3,
+} from "three";
 
 import math from "@ff/core/math";
 import Color from "@ff/core/Color";
@@ -30,24 +36,24 @@ import AnnotationFactory from "./AnnotationFactory";
 
 const _quadrantClasses = [ "sv-q0", "sv-q1", "sv-q2", "sv-q3" ];
 const _color = new Color();
-const _offset = new THREE.Vector3(0, 1, 0);
+const _offset = new Vector3(0, 1, 0);
 
 export default class ExtendedSprite extends AnnotationSprite
 {
     static readonly typeName: string = "Extended";
 
-    protected stemLine: THREE.Line;
+    protected stemLine: Line;
     protected quadrant = -1;
 
     constructor(annotation: Annotation)
     {
         super(annotation);
 
-        const geometry = new THREE.Geometry();
-        geometry.vertices.push(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 1, 0));
-        const material = new THREE.LineBasicMaterial({ color: "#009cde", transparent: true });
+        const geometry = new Geometry();
+        geometry.vertices.push(new Vector3(0, 0, 0), new Vector3(0, 1, 0));
+        const material = new LineBasicMaterial({ color: "#009cde", transparent: true });
 
-        this.stemLine = new THREE.Line(geometry, material);
+        this.stemLine = new Line(geometry, material);
         this.stemLine.frustumCulled = false;
         this.stemLine.matrixAutoUpdate = false;
         this.add(this.stemLine);
@@ -63,13 +69,13 @@ export default class ExtendedSprite extends AnnotationSprite
         this.stemLine.position.y = annotation.offset;
         this.stemLine.updateMatrix();
 
-        const material = this.stemLine.material as THREE.LineBasicMaterial;
+        const material = this.stemLine.material as LineBasicMaterial;
         material.color.fromArray(annotation.color);
 
         super.update();
     }
 
-    renderHTMLElement(element: ExtendedAnnotation, container: HTMLElement, camera: THREE.Camera)
+    renderHTMLElement(element: ExtendedAnnotation, container: HTMLElement, camera: Camera)
     {
         super.renderHTMLElement(element, container, camera, this.stemLine, _offset);
 
